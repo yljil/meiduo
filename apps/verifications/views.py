@@ -81,7 +81,7 @@ class SmsCodeView(View):
         # 5. 保存短信验证码
         pipeline.setex(mobile, 300, sms_code)
         # 添加一个发送标记.有效期 60秒 内容是什么都可以
-        pipeline.setex('send_flag_%s' % mobile, 60, 1)
+        pipeline.setex('send_flag_%s' % mobile, 120, 1)
         # ③ 管道执行指令
         pipeline.execute()
 

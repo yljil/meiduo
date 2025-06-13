@@ -10,21 +10,20 @@ from apps.users.models import User
 
 # Create your views here.
 class UsernameCountView(View):
-    def get(self,request,username):
+    def get(self, request, username):
         # if not re.match('[a-zA-Z0-9_-]{5,20}', username):
         #     return JsonResponse({'code':200,'errmsg': '用户名不符合'})
-
         count = User.objects.filter(username=username).count()
 
 
         return JsonResponse({'code':0, 'count': count, 'errmsg': 'ok'})
 
 class RegisterView(View):
-    def get(self,request):
+    def post(self,request):
 
         body_bytes = request.body
         body_str = body_bytes.decode()
-        body_dict = json.load(body_str)
+        body_dict = json.loads(body_str)
 
         username = body_dict.get('username')
         password = body_dict.get('password')
@@ -33,13 +32,22 @@ class RegisterView(View):
         allow = body_dict.get('allow')
 
         #all([xxx,xxx,xxx]) 只要有None,False 就返回False
-        if all([username, password, password2, mobile, allow]):
+        if not all([username, password, password2, mobile, allow]):
             return JsonResponse({'code': 400, 'errmsg': ''})
 
-        if not re.match('[a-zA-Z0-9_-]{5,20}',username):
+        if not re.match('[a-zA-Z_-]{5,20}',username):
             return JsonResponse({'code': 400, 'errmsg': '用户名XX'})
 
+        user = User.objects.create_user(username=username, password=password, mobile=mobile)
 
+        # 系统（Django）为我们提供了 状态保持的方法
+        from django.contrib.auth import login
+        # request, user,
+        # 状态保持 -- 登录用户的状态保持
+        # user 已经登录的用户信息
+        login(request, user)
 
-        User.objects.create_user(username=username,password=password,mobile=mobile,allow=allow)
+        # 5. 返回响应
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+
 
