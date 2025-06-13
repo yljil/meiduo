@@ -51,3 +51,35 @@ class RegisterView(View):
         return JsonResponse({'code': 0, 'errmsg': 'ok'})
 
 
+#登入
+class LoginView(View):
+
+    def post(self,request):
+
+        #获取json数据
+        data = json.loads(request.body.decode())
+        username = data.get('username')
+        password = data.get('password')
+        remembered = data.get('remembered')
+
+        #判断是否输入账号密码
+        if not all([username, password]):
+            return JsonResponse({'code': 400, 'errmsg': '数据不全'})
+
+        from django.contrib.auth import authenticate
+        user = authenticate(username=username, password=password)
+
+        if user is None:
+            return JsonResponse({'code':400,'errmsg':'账号或密码错误！'})
+        from django.contrib.auth import login
+        login(request, user)
+
+
+        #登入有效时间
+        if remembered:
+            #默认两周
+            request.session.set_expiry(None)
+        else:
+            request.session.set_expiry(0)
+
+        return JsonResponse({'code': 0, 'errmsg': 'ok'})
