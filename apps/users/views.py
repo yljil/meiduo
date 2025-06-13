@@ -66,6 +66,14 @@ class LoginView(View):
         if not all([username, password]):
             return JsonResponse({'code': 400, 'errmsg': '数据不全'})
 
+
+        #根据修改User.USERNAME_FIELD字段
+        #来影响authenticate的查询
+        if re.match('1[3-9]\d{9}',username):
+            User.USERNAME_FIELD = 'mobile'
+        else:
+            User.USERNAME_FIELD = 'username'
+
         from django.contrib.auth import authenticate
         user = authenticate(username=username, password=password)
 
@@ -82,4 +90,30 @@ class LoginView(View):
         else:
             request.session.set_expiry(0)
 
-        return JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+
+        response.set_cookie('username', username)
+        return response
+
+from django.contrib.auth import logout
+class LogoutView(View):
+    def delete(self,request):
+        logout(request)
+
+        response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+        response.delete_cookie('username')
+
+        return response
+
+
+"""
+LoginRequiredMixin 未登录的返回重定向
+
+"""
+
+from utils.views import LoginRequiredjsonMixin
+
+class CenterView(LoginRequiredjsonMixin, View):
+
+    def get(self, request):
+        return JsonResponse({'code':0,'errmsg': 'ok'})
