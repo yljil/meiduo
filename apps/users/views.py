@@ -9,21 +9,27 @@ from apps.users.models import User
 
 
 # Create your views here.
+
+#判断用户名是否重复
 class UsernameCountView(View):
     def get(self, request, username):
-        # if not re.match('[a-zA-Z0-9_-]{5,20}', username):
-        #     return JsonResponse({'code':200,'errmsg': '用户名不符合'})
+        #接收用户名
+        """判断用户名是否满足要求
+                if not re.match('[a-zA-Z0-9_-]{5,20}', username):
+            return JsonResponse({'code':200,'errmsg': '用户名不符合'})
+        """
+        #查询用户名数量
         count = User.objects.filter(username=username).count()
 
-
+        #返回前端进行判断
         return JsonResponse({'code':0, 'count': count, 'errmsg': 'ok'})
 
 class RegisterView(View):
     def post(self,request):
 
-        body_bytes = request.body
+        body_bytes = request.body  #接收json数据
         body_str = body_bytes.decode()
-        body_dict = json.loads(body_str)
+        body_dict = json.loads(body_str)  #变为字典
 
         username = body_dict.get('username')
         password = body_dict.get('password')
@@ -33,13 +39,30 @@ class RegisterView(View):
 
         #all([xxx,xxx,xxx]) 只要有None,False 就返回False
         if not all([username, password, password2, mobile, allow]):
-            return JsonResponse({'code': 400, 'errmsg': ''})
+            return JsonResponse({'code': 400, 'errmsg': '数据不全'})
 
         if not re.match('[a-zA-Z_-]{5,20}',username):
             return JsonResponse({'code': 400, 'errmsg': '用户名XX'})
+        """密码满足规则
+            确认密码与密码要一致
+            手机号不重复
+            要同意协议
+        """
 
+        #数据入库
+        """这两种都没有加密
+        1.
+        user = User(username=username, password=password, mobile=mobile)
+        user.save()
+        2.
+        User.objects.create(username=username, password=password, mobile=mobile)
+        """
         user = User.objects.create_user(username=username, password=password, mobile=mobile)
 
+
+        """设置session信息
+        request.session['user_id'] = user.id
+        """
         # 系统（Django）为我们提供了 状态保持的方法
         from django.contrib.auth import login
         # request, user,

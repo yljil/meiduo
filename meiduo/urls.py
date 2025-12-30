@@ -16,9 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+
+#注册转换器在meiduo/utils文件夹中
 from utils.converters import UsernameConverter
 from django.urls import register_converter
-
 register_converter(UsernameConverter, 'username')
 
 

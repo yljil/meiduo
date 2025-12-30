@@ -28,7 +28,7 @@ class ImageCodeView(View):
         print(text)
         from django_redis import get_redis_connection
 
-        #连接redis数据库
+        #连接redis数据库,并保存到settings.py中的code库（2号）
         redis_cli = get_redis_connection('code')
 
         #name,time,value
@@ -43,14 +43,14 @@ class ImageCodeView(View):
 
 
 
-
+#手机验证码
 class SmsCodeView(View):
     def get(self,request,mobile):
         #获取数据
         image_code = request.GET.get('image_code')
         uuid= request.GET.get('image_code_id')
         if not all([image_code,uuid]):
-            return JsonResponse({'code':400,'message':'参数不全'})
+            return JsonResponse({'code':400,'errmsg':'参数不全'})
 
         #连接redis
         from django_redis import get_redis_connection
@@ -59,14 +59,15 @@ class SmsCodeView(View):
         redis_image_code = redis_cli.get(uuid)
 
         if redis_image_code is None:
-            return JsonResponse({'code':400,'message':'图片验证码过期'})
+            return JsonResponse({'code':400,'errmsg':'图片验证码过期'})
 
+        #全部转为小写
         if redis_image_code.decode().lower() != image_code.lower():
-            return JsonResponse({'code':400,'message':'图片验证码错误'})
+            return JsonResponse({'code':400,'errmsg':'图片验证码错误'})
 
         #查看标记
-        send_flag = redis_cli.get('send_flag_%s' % mobile)
-
+        send_flag = redis_cli.get('send_flag_%s'%mobile)
+        print(send_flag)
         if send_flag is not None:
             return JsonResponse({'code':400,'errmsg':'不要频繁发送短信'})
 
@@ -84,9 +85,18 @@ class SmsCodeView(View):
         pipeline.setex('send_flag_%s' % mobile, 120, 1)
         # ③ 管道执行指令
         pipeline.execute()
+        """
+        redis_cli.setex(mobile,300,sms_code)
 
-        from libs.yuntongxun.sms import CCP
+         #添加标记防止重复发送
+        redis_cli.setex('send_flag_%s'%mobile,600,1)
+        """
+        # from libs.yuntongxun.sms import CCP
 
-        CCP().send_template_sms(mobile,[sms_code,5],1)
-        
-        return JsonResponse({'code':0,'message':'OK'})
+        # CCP().send_template_sms(mobile,[sms_code,5],1)
+
+
+        from celery_tasks.sms.tasks import celery_send_sms_code
+        celery_send_sms_code.delay(mobile,sms_code)
+
+        return JsonResponse({'code':0,'errmsg':'OK'})

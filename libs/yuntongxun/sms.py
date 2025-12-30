@@ -70,7 +70,7 @@ class CCP(object):
             return -1
 
 
-# if __name__ == '__main__':
+# if __name__ == '__main__': #测试
 #     ccp = CCP()
 #     # 注意： 测试的短信模板编号为1
 #

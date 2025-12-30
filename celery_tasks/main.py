@@ -1,6 +1,13 @@
 ##celery -A celery_tasks.main worker -l info
 
+# # 保留你原有参数，新增 --pool=solo 指定单进程模式（Windows兼容）
+# celery -A celery_tasks.main worker -l info --pool=solo
+# celery -A celery_tasks.main worker -l info -P gevent -c 4
+# 在虚拟环境下执行
 
+"""
+生产者，消费者，队列
+"""
 
 # 0. 为celery的运行 设置Django的环境
 import os

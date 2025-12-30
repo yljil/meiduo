@@ -126,7 +126,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-
+#链接redis
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -158,7 +158,7 @@ SESSION_CACHE_ALIAS = 'session'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-
+#配置日志
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -186,8 +186,8 @@ LOGGING = {
             "level": "INFO",
             "class": "logging.handlers.RotatingFileHandler",
             "filename": os.path.join(BASE_DIR, 'logs/meiduo.log'),
-            "maxBytes": 300*1024*1024,
-            "backupCount": 10,
+            "maxBytes": 300*1024*1024, #一个文件的大小
+            "backupCount": 10, #最多文件的个数
             "formatter": "verbose",
         },
     },
@@ -195,14 +195,15 @@ LOGGING = {
         "django": {
             "handlers": ["console", "file"],
             "propagate": True,
-            "level": "INFO",
+            "level": "INFO", #接收的最低级别
         },
     },
 }
 
+#覆盖django中的user模型
 AUTH_USER_MODEL = "users.User"
 
-#CORS
+#跨域CORS 白名单
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
