@@ -1,11 +1,14 @@
+import re
+
 from django.contrib.auth import login
 from django.shortcuts import render
-
+import json
 # Create your views here.
 from django.views import View
 from QQLoginTool.QQtool import OAuthQQ
 
 from apps.oauth.models import OAuthUser
+from apps.users.models import User
 from meiduo import settings
 from django.http import JsonResponse
 
@@ -27,8 +30,9 @@ class OauthQQView(View):
                      client_secret=settings.QQ_CLIENT_SECRET, #appsecret
                      redirect_uri=settings.QQ_CALLBACK_URL, #跳转的页面
                      state='xxxxx')  #不知道什么意识
-        # '40A140CFBD7287354A62906C454E8937'
+
         token = qq.get_access_token(code)
+
         openid = qq.get_open_id(token)
 
 
@@ -44,3 +48,54 @@ class OauthQQView(View):
             response = JsonResponse({'code':0,'errmsg':'ok'})
             response.set_cookie('username', qquser.user.username)
             return response
+
+    def post(self, request):
+        data = json.loads(request.body.decode())
+        mobile = data.get('mobile')
+        password = data.get('password')
+        sms_code = data.get('sms_code')
+        openid = data.get('access_token')
+        """
+        #对数据进行校验
+        if not all([mobile,password,sms_code]):
+            return JsonResponse({'code':'400','errmsg':'参数不全'})
+        if not re.match(r'^1[3-9]\d{9}',mobile):
+            return JsonResponse({'code':'400','errmsg': '请输入正确的手机号'})
+        if not re.match(r'^[0-9A-Za-z]{8,20}$]',password):
+            return JsonResponse({'code':'400','errmsg': '请输入8-20位的密码'})
+        
+        from django_redis import get_redis_connection
+
+        redis_conn = get_redis_connection('code')
+
+        sms_code_server = redis_conn.get('sms_%s'%mobile)
+        if sms_code_server is None:
+            return JsonResponse({'code':'400','errmsg':'验证码失效'})
+
+        if sms_code != sms_code_server.decode():
+            return JsonResponse({'code':'400','errmsg':'验证码错误'})
+        """
+        # openid = check_access_token(access_token)
+        if not openid:
+            return JsonResponse({'code':'400','errmsg':'参数缺失'})
+
+        try:
+            user = User.objects.get(mobile=mobile)
+        except User.DoesNotExist:
+            #手机号不存在
+            user = User.objects.create_user(username=mobile,
+                                            mobile=mobile,
+                                            password=password,
+                                            )
+        else:
+            if not user.check_password(password):
+                return JsonResponse({'code':'400','errmsg':'账号或密码错误'})
+        OAuthUser.objects.create(user=user,openid=openid)
+
+        #状态保持
+        login(request, user)
+
+        response = JsonResponse({'code':'0','errmsg':'ok'})
+
+        response.set_cookie('username',user.username)
+        return response
