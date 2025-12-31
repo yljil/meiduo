@@ -102,11 +102,12 @@ class LoginView(View):
 
         if user is None:
             return JsonResponse({'code':400,'errmsg':'账号或密码错误！'})
+
+
+
         from django.contrib.auth import login
         login(request, user)
-
-
-        #登入有效时间
+        #判断是否记住登陆，登入有效时间
         if remembered:
             #默认两周
             request.session.set_expiry(None)
@@ -131,7 +132,6 @@ class LogoutView(View):
 
 """
 LoginRequiredMixin 未登录的返回重定向
-
 """
 
 from utils.views import LoginRequiredjsonMixin

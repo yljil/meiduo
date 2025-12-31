@@ -28,4 +28,5 @@ urlpatterns = [
     #导入子应用
     path('', include('apps.users.urls')),
     path('', include('apps.verifications.urls')),
+    path('', include('apps.oauth.urls')),
 ]
