@@ -7,6 +7,7 @@ from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):  #继承
     mobile = models.CharField(max_length=11,unique=True)
+    email_active = models.BooleanField(default=False,verbose_name="验证状态")
     """自己定义模型
     密码要加密
     class User(models.Model):

@@ -40,7 +40,17 @@ class OauthQQView(View):
             qquser = OAuthUser.objects.get(openid=openid)
         except OAuthUser.DoesNotExist:
             #没有绑定过
-            response = JsonResponse({'code':'400','access_token':openid})
+            """
+            from meiduo import settings
+            from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
+            # 这个类可以对数据进行加密，还可以添加一个时效
+            # secret_key     密钥， expires_in   过期时间(秒)
+            s = Serializer(secret_key=settings.SECRET_KEY, expires_in=3600)
+            access_token = s.dumps({'openid':openid})
+            """
+            from apps.oauth.utlis import generic_openid
+            access_token = generic_openid(openid)
+            response = JsonResponse({'code':'400','access_token':access_token})
             return response
         else:
             #绑定过
@@ -75,8 +85,11 @@ class OauthQQView(View):
         if sms_code != sms_code_server.decode():
             return JsonResponse({'code':'400','errmsg':'验证码错误'})
         """
-        # openid = check_access_token(access_token)
-        if not openid:
+
+        from apps.oauth.utlis import check_access_token
+        openid = check_access_token(openid)
+
+        if openid is None:
             return JsonResponse({'code':'400','errmsg':'参数缺失'})
 
         try:
@@ -99,3 +112,12 @@ class OauthQQView(View):
 
         response.set_cookie('username',user.username)
         return response
+
+from meiduo import settings
+from itsdangerous import TimedSerializer as Serializer
+#这个类可以对数据进行加密，还可以添加一个时效
+#secret_key     密钥， expires_in   过期时间(秒)
+s = Serializer(secret_key=settings.SECRET_KEY)
+to = s.dumps({'openid':'1234567890'})
+#解密
+s.loads(to)

@@ -139,4 +139,42 @@ from utils.views import LoginRequiredjsonMixin
 class CenterView(LoginRequiredjsonMixin, View):
 
     def get(self, request):
-        return JsonResponse({'code':0,'errmsg': 'ok'})
+
+        #request.user 来自于中间件
+        info_data = {
+            'username': request.user.username,
+            'email': request.user.email,
+            'mobile': request.user.mobile,
+            'email_active': request.user.email_active,
+        }
+        return JsonResponse({'code':0,'errmsg': 'ok','info_data':info_data})
+
+class EmailView(LoginRequiredjsonMixin,View):
+    def put(self, request):
+        #获取数据
+        data = json.loads(request.body.decode())
+        email = data.get('email')
+        #验证数据
+
+        #数据库更新数据
+        user = request.user
+        user.email = email
+        user.save() #保存在数据库中
+        
+        #发送激活邮件
+        from django.core.mail import send_mail
+        '''
+        subject:主题  message:内容  from_email:发件人  recipient_list:收件人列表
+        '''
+        subject = '激活邮件'
+        message = ''
+        from_email = 'md<18870297601@163.com>'
+        recipient_list = ['<18870297601@163.com>']
+        html_message = '点击激活 <a href=''>激活</a>'
+        send_mail(subject=subject,
+                  message=message,
+                  from_email=from_email,
+                  recipient_list=recipient_list,
+                  html_message=html_message)
+
+        return JsonResponse({'code':0,'errmsg':'ok'})

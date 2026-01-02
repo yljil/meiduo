@@ -217,3 +217,14 @@ QQ_CLIENT_ID = '101474184'
 QQ_CLIENT_SECRET = 'c6ce949e04e12ecc909ae6a8b09b637c'
 
 QQ_CALLBACK_URL = 'http://www.meiduo.site:8080/oauth_callback.html'
+
+
+#####邮件发送
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+EMAIL_HOST_USER = '18870297601@163.com'
+
+EMAIL_HOST_PASSWORD = 'WLcxVHNd6MzVY6KX'
+
+EMAIL_FROM = 'md<18870297601@163.com>'
