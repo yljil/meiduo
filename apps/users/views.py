@@ -170,11 +170,48 @@ class EmailView(LoginRequiredjsonMixin,View):
         message = ''
         from_email = 'md<18870297601@163.com>'
         recipient_list = ['<18870297601@163.com>']
-        html_message = '点击激活 <a href=''>激活</a>'
-        send_mail(subject=subject,
-                  message=message,
-                  from_email=from_email,
-                  recipient_list=recipient_list,
-                  html_message=html_message)
+        from apps.users.utils import generate_token
 
+        token = generate_token(request.user.id)
+
+        verify_url = "http://www.meiduo.site:8080/success_verify_email.html?tokon=%s"%token
+        html_message = '<p>尊贵的用户您好！</p>' \
+                       '<p>感谢您使用XX商城。</p>' \
+                       '<p>您的邮箱为：%s。点击链接激活邮箱</p>' \
+                       '<p><a href="%s">%s</a></p>'%(email, verify_url, verify_url)
+        # html_message = "点击激活 <a href='http://itcast.cn/?token=%s'>激活</a>"
+        # send_mail(subject=subject,
+        #           message=message,
+        #           from_email=from_email,
+        #           recipient_list=recipient_list,
+        #           html_message=html_message)
+        from celery_tasks.email.tasks import celery_send_email
+        celery_send_email.delay(subject=subject,
+                                message=message,
+                                from_email=from_email,
+                                recipient_list=recipient_list,
+                                html_message=html_message
+            )
+
+        return JsonResponse({'code':0,'errmsg':'ok'})
+class EmailVerifyView(View):
+    def put(self, request):
+        ##接收请求
+        params = request.GET
+        #获取参数
+        token = params.get('tokon')
+
+        if token is None:
+            return JsonResponse({'code':400,'errmsg':'kong'})
+
+        #解密
+        from apps.users.utils import check_token
+        user_id = check_token(token)
+        if user_id is None:
+            return JsonResponse({'code':400,'errmsg':'kong'})
+
+        #从数据库中查询到该数据修改并保存
+        user = User.objects.get(id=user_id)
+        user.email_active = True
+        user.save()
         return JsonResponse({'code':0,'errmsg':'ok'})

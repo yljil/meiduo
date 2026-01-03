@@ -8,7 +8,7 @@ def generic_openid(openid):
     access_token = s.dumps({'openid': openid})
 
     #将bytes类型转为str
-    return access_token.decode()
+    return access_token
 
 def check_access_token(token):
     s = Serializer(secret_key=settings.SECRET_KEY)
