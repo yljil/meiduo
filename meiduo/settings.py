@@ -45,6 +45,9 @@ INSTALLED_APPS = [
     'apps.goods.apps.GoodsConfig',
     # CORS
     'corsheaders',
+    #haystack  数据和elasticsearch之间的数据传输工具
+    'haystack',
+    'django_crontab',
 ]
 
 MIDDLEWARE = [
@@ -231,3 +234,19 @@ EMAIL_HOST_USER = '18870297601@163.com'
 EMAIL_HOST_PASSWORD = 'WLcxVHNd6MzVY6KX'
 
 EMAIL_FROM = 'md<18870297601@163.com>'
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
+        'URL': 'http://127.0.0.1:9200',
+        'INDEX_NAME': 'haystack',
+    },
+}
+
+'''每页12条数据'''
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
+
+#############################
+CRONJOBS = [
+    ('*/1 * * * *', 'apps.contents.crons.generate_static_index_html()', '>>' + os.path.join(BASE_DIR, 'logs/crontab.log'))
+]

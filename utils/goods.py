@@ -107,7 +107,7 @@ def get_goods_specs(sku):
     goods_specs = sku.spu.specs.order_by('id')
     # 若当前sku的规格信息不完整，则不再继续
     if len(sku_key) < len(goods_specs):
-        return
+        return []
     for index, spec in enumerate(goods_specs):
         # 复制当前sku的规格键
         key = sku_key[:]
