@@ -126,7 +126,7 @@ class MySearchView(SearchView):
         return JsonResponse(data_list, safe=False)
 
 
-
+'''查询SKU规格信息'''
 class DetailView(View):
 
     def get(self,request,sku_id):
@@ -147,3 +147,36 @@ class DetailView(View):
             'specs': goods_specs,
         }
         return render(request,'detail.html',context)
+
+
+"""
+访问量
+前端发送请求
+后端接收，获取数据
+实现逻辑
+返回json数据
+"""
+from datetime import date
+from apps.goods.models import GoodsVisitCount
+class CategoryVisitCountView(View):
+    def post(self,request,category_id):
+        try:
+            category = GoodsCategory.objects.get(id=category_id)
+        except GoodsCategory.DoesNotExist:
+            return JsonResponse({'code': '400', 'errmsg': '没有此类'})
+        # 2.查询日期数据
+        # 获取当天日期
+        today_date = date.today()
+        try:
+            # 3.如果有当天商品分类的数据  就累加数量
+            count_data = category.goodsvisitcount_set.get(date=today_date)
+        except:
+            # 4. 没有, 就新建之后在增加
+            count_data = GoodsVisitCount()
+        try:
+            count_data.count += 1
+            count_data.category = category
+            count_data.save()
+        except Exception as e:
+            return JsonResponse({'code': 400, 'errmsg': '新增失败'})
+        return JsonResponse({'code': 0, 'errmsg': 'OK'})
