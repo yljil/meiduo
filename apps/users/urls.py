@@ -15,4 +15,5 @@ urlpatterns = [
     path('addresses/<address_id>/default/', views.DefaultAddressView.as_view()),
     path('addresses/<address_id>/title/',views.UpdateTitleAddressView.as_view()),
     path('password/',views.ChangePasswordView.as_view()),
+    path('browse_histories/', views.UserBrowseHistory.as_view())
 ]

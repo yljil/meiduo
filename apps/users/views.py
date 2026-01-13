@@ -461,3 +461,57 @@ class ChangePasswordView(LoginRequiredMixin, View):
         response.delete_cookie('username')
         # # 响应密码修改结果：重定向到登录界面
         return response
+
+"""
+最近浏览记录
+保存在redis中（mysql也可以）
+"""
+from apps.goods.models import SKU
+from django_redis import get_redis_connection
+
+class UserBrowseHistory(LoginRequiredjsonMixin,View):
+    """用户浏览记录"""
+
+    def post(self, request):
+        user = request.user
+        """保存用户浏览记录"""
+        # 接收参数
+        data = json.loads(request.body.decode())
+        sku_id = data.get('sku_id')
+
+        # 校验参数
+        try:
+            sku = SKU.objects.get(id=sku_id)
+        except SKU.DoesNotExist:
+            return JsonResponse({'code': 400, 'errmsg': 'sku不存在'})
+
+        # 保存用户浏览数据
+        redis_cli = get_redis_connection('history')
+        # pl = redis_conn.pipeline()
+        # user_id = request.user.id
+
+        # 先去重
+        redis_cli.lrem('history_%s' % user.id, 0, sku_id)
+        # 再存储
+        redis_cli.lpush('history_%s' % user.id, sku_id)
+        # 最后截取
+        redis_cli.ltrim('history_%s' % user.id, 0, 4)
+        # 执行管道
+        # redis_cli.execute()
+
+        # 响应结果
+        return JsonResponse({'code': 0, 'errmsg': 'OK'})
+    def get(self, request):
+        redis_conn = get_redis_connection('history')
+        sku_ids = redis_conn.lrange('history_%s' % request.user.id, 0,4)
+
+        skus = []
+        for sku_id in sku_ids:
+            sku = SKU.objects.get(id=sku_id)
+            skus.append({
+                'id': int(sku_id),
+                'name': sku.name,
+                'default_image_url': sku.default_image.url,
+                'price': sku.price
+            })
+            return JsonResponse({'code': 0, 'errmsg': 'OK','skus': skus})
