@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'apps.areas.apps.AreasConfig',
     'apps.contents.apps.ContentsConfig',
     'apps.goods.apps.GoodsConfig',
+    'apps.carts.apps.CartsConfig',
     # CORS
     'corsheaders',
     #haystack  数据和elasticsearch之间的数据传输工具
@@ -159,6 +160,13 @@ CACHES = {
     "history": {
         "BACKEND": "django_redis.cache.RedisCache",
         "LOCATION": "redis://127.0.0.1:6379/3",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+    "carts": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/4",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
