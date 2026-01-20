@@ -74,7 +74,7 @@ class SmsCodeView(View):
         #生成验证码
         from random import randint
         sms_code = '%06d'%randint(0,999999)
-
+        print(sms_code)
         # 管道 3步
         # ① 新建一个管道
         pipeline = redis_cli.pipeline()
@@ -85,6 +85,7 @@ class SmsCodeView(View):
         pipeline.setex('send_flag_%s' % mobile, 120, 1)
         # ③ 管道执行指令
         pipeline.execute()
+
         """
         redis_cli.setex(mobile,300,sms_code)
 

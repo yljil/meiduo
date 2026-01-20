@@ -1,6 +1,8 @@
 import json
 import pickle
 import base64
+from urllib import response
+
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
 from django.views import View
@@ -18,7 +20,7 @@ class CartsView(View):
         try:
             sku = SKU.objects.get(id = sku_id)
         except SKU.DoesNotExist:
-            return JsonResponse({'coed': 400, 'errmsg': '无此商品'})
+            return JsonResponse({'code': 400, 'errmsg': '无此商品'})
         try:
             count = int(count)
         except Exception:
@@ -45,8 +47,11 @@ class CartsView(View):
         else:
             #获取cookie数据,并判断
             cookie_carts = request.COOKIES.get('carts')
+            print(cookie_carts)
             if cookie_carts:
-                carts = pickle.loads(base64.b64encode(cookie_carts))
+                # carts = pickle.loads(base64.b64encode(cookie_carts.encode()))
+                cart_bytes = base64.b64decode(cookie_carts.encode())
+                carts = pickle.loads(cart_bytes)
             else:
                 carts = {}
 
@@ -66,8 +71,8 @@ class CartsView(View):
                 'count': count,
                 'selected': True
             }
-            carte_bytes = pickle.dumps(carts)
-            base64encode = base64.b64encode(carte_bytes)
+            cart_bytes = pickle.dumps(carts)
+            base64encode = base64.b64encode(cart_bytes)
             response = JsonResponse({'code': 0, 'errmsg': 'ok'})
             response.set_cookie('carts',base64encode.decode(),max_age=3600*24*12)
             return response
@@ -195,4 +200,40 @@ class CartsView(View):
             response = JsonResponse({'code': 0, 'errmsg': 'ok'})
             response.set_cookie('carts', new_carts.decode(), max_age=7*24*3600)
 
+            return response
+
+
+
+"""全选购物车"""
+class CartsSelectAllView(View):
+
+    def put(self,request):
+        data = json.loads(request.body.decode())
+        #设置默认全选
+        selected = data.get('selected',True)
+        if selected:
+            if not isinstance(selected,bool):  #判断数据是否符合
+                return JsonResponse({'code': 400, 'errmsg': '数据错误'})
+        user= request.user
+        if user is not None and user.is_authenticated:
+            redis_cli = get_redis_connection('carts')
+            carts = redis_cli.hgetall('carts_%s' % user.id)
+            sku_id_list = carts.keys()
+            if selected:
+                #全选
+                redis_cli.sadd('selected_%s' % user.id,*sku_id_list)
+            else:
+                #取消全选
+                redis_cli.srem('selected_%s' % user.id,*sku_id_list)
+            return JsonResponse({'code': 0, 'errmsg': 'ok'})
+        else:
+
+            response = JsonResponse({'code': 0, 'errmsg': 'ok'})
+            carts = request.COOKIES.get('carts')
+            if carts is not None:
+                carts = pickle.loads(base64.b64decode(carts.encode()))
+                for sku_id in carts:
+                    carts[sku_id]['selected'] = selected
+                cookie_cart = base64.b64encode(pickle.dumps(carts)).decode()
+                response.set_cookie('carts', cookie_cart,max_age=7*24*3600)
             return response

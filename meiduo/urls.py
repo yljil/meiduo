@@ -27,10 +27,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     #导入子应用
     path('', include('apps.users.urls')),
-    path('', include('apps.verifications.urls')),
+    path('', include('apps.verifications.urls')),   #验证码
     path('', include('apps.oauth.urls')),
     path('', include('apps.areas.urls')),
     path('', include('apps.goods.urls')),
     path('', include('apps.carts.urls')),
+    path('', include('apps.orders.urls')),          #订单功能
     # path('', include('apps.contents.urls')),
 ]

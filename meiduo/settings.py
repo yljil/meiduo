@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.contents.apps.ContentsConfig',
     'apps.goods.apps.GoodsConfig',
     'apps.carts.apps.CartsConfig',
+    'apps.orders.apps.OrdersConfig',
     # CORS
     'corsheaders',
     #haystack  数据和elasticsearch之间的数据传输工具

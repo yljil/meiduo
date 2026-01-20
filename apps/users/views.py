@@ -109,6 +109,8 @@ class LoginView(View):
 
         from django.contrib.auth import login
         login(request, user)
+
+
         #判断是否记住登陆，登入有效时间
         if remembered:
             #默认两周
@@ -119,6 +121,10 @@ class LoginView(View):
         response = JsonResponse({'code': 0, 'errmsg': 'ok'})
 
         response.set_cookie('username', username)
+
+        from apps.carts.utils import merge_cookie_to_redis
+        response = merge_cookie_to_redis(request, response)
+
         return response
 
 """用户退出登入（删除cookie）"""
