@@ -142,7 +142,7 @@ class OrderCommitView(LoginRequiredjsonMixin, View):
         #生成订单ID(年月日时分秒+用户ID)
         from django.utils import timezone
         from datetime import datetime
-        order_id = timezone.localtime().strftime('%Y%m%d%H%M%S')
+        order_id = timezone.localtime().strftime('%Y%m%d%H%M%S%f')
 
         # if pay_method == 1: #货到付款
         #     pay_method = 2
@@ -178,27 +178,48 @@ class OrderCommitView(LoginRequiredjsonMixin, View):
             carts = {}
             for sku_id in selected_ids:
                 carts[int(sku_id)] = int(sku_id_counts[sku_id])
-            for sku_id,count in carts.items():
-                sku = SKU.objects.get(id=sku_id)
-                #判断库存是否充足
-                if sku.stock < count:
+            for sku_id, count in carts.items():
+                for i in range(5):
+                    sku = SKU.objects.get(id=sku_id)
+                    #判断库存是否充足
+                    if sku.stock < count:
 
-                    transaction.savepoint_rollback(point)
-                    return JsonResponse({'code': 400, 'errmsg': '库存不足'})
-                sku.stock -= count
-                sku.sales += count
-                sku.save()
-                #总数量和总金额
-                orderinfo.total_count += count
-                orderinfo.total_amount += (count*sku.price)
-                #保存订单信息
-                OrderGoods.objects.create(
-                    order=orderinfo,
-                    sku=sku,
-                    count=count,
-                    price=sku.price
-                )
+                        transaction.savepoint_rollback(point)
+                        return JsonResponse({'code': 400, 'errmsg': '库存不足'})
+                    # sku.stock -= count
+                    # sku.sales += count
+                    # sku.save()
+                    from time import sleep
+                    sleep(7)
+
+
+                    old_stock = sku.stock
+                    new_stock = sku.stock - count
+                    new_sales = sku.sales + count
+                    result = SKU.objects.filter(id=sku_id,stock=old_stock).update(stock=new_stock,sales=new_sales)
+                    if result == 0:
+                        sleep(0.005)
+                        continue
+                        # transaction.savepoint_rollback(point)
+                        # return JsonResponse({'code': 400, 'errmsg': 'XXX'})
+                        # pass
+
+                    #总数量和总金额
+                    orderinfo.total_count += count
+                    orderinfo.total_amount += (count*sku.price)
+                    #保存订单信息
+                    OrderGoods.objects.create(
+                        order=orderinfo,
+                        sku=sku,
+                        count=count,
+                        price=sku.price
+                    )
+                    break
 
             orderinfo.save()
             transaction.savepoint_commit(point)
+
+            #将redis中的选中商品移除
+
+
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'order_id': order_id})
