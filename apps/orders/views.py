@@ -190,7 +190,7 @@ class OrderCommitView(LoginRequiredjsonMixin, View):
                     # sku.sales += count
                     # sku.save()
                     from time import sleep
-                    sleep(7)
+                    # sleep(7)
 
 
                     old_stock = sku.stock
@@ -220,6 +220,10 @@ class OrderCommitView(LoginRequiredjsonMixin, View):
             transaction.savepoint_commit(point)
 
             #将redis中的选中商品移除
+            pl = redis_cli.pipeline()
+            pl.hdel('carts_%s' % user.id, *selected_ids)
+            pl.srem('selected_%s' % user.id, *selected_ids)
+            pl.execute()
 
 
         return JsonResponse({'code': 0, 'errmsg': 'ok', 'order_id': order_id})

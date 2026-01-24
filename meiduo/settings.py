@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'apps.goods.apps.GoodsConfig',
     'apps.carts.apps.CartsConfig',
     'apps.orders.apps.OrdersConfig',
+    'apps.pay.apps.PayConfig',
     # CORS
     'corsheaders',
     #haystack  数据和elasticsearch之间的数据传输工具
@@ -266,3 +267,12 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 12
 CRONJOBS = [
     ('*/1 * * * *', 'apps.contents.crons.generate_static_index_html()', '>>' + os.path.join(BASE_DIR, 'logs/crontab.log'))
 ]
+
+
+#####################################
+ALIPAY_APPID = '9021000159651625'
+ALIPAY_DEBUG = True
+ALIPAY_URL = 'https://openapi-sandbox.dl.alipaydev.com/gateway.do'
+ALIPAY_RETURN_URL = 'http://www.meiduo.site:8080/pay_success.html'
+APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/private.key')
+ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/public.key')
