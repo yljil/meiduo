@@ -46,15 +46,17 @@ INSTALLED_APPS = [
     'apps.carts.apps.CartsConfig',
     'apps.orders.apps.OrdersConfig',
     'apps.pay.apps.PayConfig',
+    'apps.sc_admin.apps.AdminConfig',
+    'apps.mei_admin.apps.MeiAdminConfig',
     # CORS
     'corsheaders',
     #haystack  数据和elasticsearch之间的数据传输工具
     'haystack',
-    'django_crontab',
+    'django_crontab', #定时任务
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware', #跨域
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -227,12 +229,19 @@ LOGGING = {
 #覆盖django中的user模型
 AUTH_USER_MODEL = "users.User"
 
+
+ALLOWED_HOSTS = ['www.meiduo.site', 'localhost', '127.0.0.1']
 #跨域CORS 白名单
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:8080',
     'http://127.0.0.1:8080',
+    'http://www.meiduo.site:8080',
+    'http://www.meiduo.site:8090',
+    'http://localhost:8090',
+    'http://127.0.0.1:8090',
     'http://www.meiduo.site:8000',
-    'http://www.meiduo.site:8080'
+    'http://localhost:8080',
+    'http://127.0.0.1:8000'
 ]
 CORS_ALLOW_CREDENTIALS = True  #允许携带cookie
 
@@ -246,11 +255,16 @@ QQ_CALLBACK_URL = 'http://www.meiduo.site:8080/oauth_callback.html'
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.163.com'
 EMAIL_PORT = 25
+#发送邮件的邮箱
 EMAIL_HOST_USER = '18870297601@163.com'
-
+#客户端授权密码
 EMAIL_HOST_PASSWORD = 'WLcxVHNd6MzVY6KX'
 
 EMAIL_FROM = 'md<18870297601@163.com>'
+
+##################
+DEFAULT_FILE_STORAGE = 'utils.fastdfs.storage.MyStorage'
+
 
 HAYSTACK_CONNECTIONS = {
     'default': {
@@ -269,10 +283,40 @@ CRONJOBS = [
 ]
 
 
-#####################################
+################支付宝相关#####################
 ALIPAY_APPID = '9021000159651625'
 ALIPAY_DEBUG = True
 ALIPAY_URL = 'https://openapi-sandbox.dl.alipaydev.com/gateway.do'
 ALIPAY_RETURN_URL = 'http://www.meiduo.site:8080/pay_success.html'
 APP_PRIVATE_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/private.key')
 ALIPAY_PUBLIC_KEY_PATH = os.path.join(BASE_DIR, 'apps/pay/key/public.key')
+
+
+
+################################################
+REST_FRAMEWORK = {
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticatedOrReadOnly'
+    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+         # 替换掉原来的 rest_framework_jwt 认证类
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        # 其他认证类（如 SessionAuthentication）保留
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
+from datetime import timedelta
+
+SIMPLE_JWT = {
+    # Token 有效期配置
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+
+    # 签名密钥（建议使用 Django 自带的 SECRET_KEY，或自定义）
+    'SIGNING_KEY': 'your-secret-key',  # 可替换为 settings.SECRET_KEY
+
+    # 认证头前缀（前端请求时需携带：Bearer <token>）
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+

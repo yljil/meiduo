@@ -420,7 +420,7 @@ class UpdateTitleAddressView(View):
             address.save()
         except Exception as e:
             logger.error(e)
-            return http.JsonResponse({'code': 400, 'errmsg': '设置地址标题失败'})
+            return JsonResponse({'code': 400, 'errmsg': '设置地址标题失败'})
 
         # 4.响应删除地址结果
         return JsonResponse({'code': 0, 'errmsg': '设置地址标题成功'})
@@ -520,4 +520,4 @@ class UserBrowseHistory(LoginRequiredjsonMixin,View):
                 'default_image_url': sku.default_image.url,
                 'price': sku.price
             })
-            return JsonResponse({'code': 0, 'errmsg': 'OK','skus': skus})
+        return JsonResponse({'code': 0, 'errmsg': 'OK','skus': skus})

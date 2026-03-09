@@ -34,5 +34,6 @@ urlpatterns = [
     path('', include('apps.carts.urls')),
     path('', include('apps.orders.urls')),          #订单功能
     path('', include('apps.pay.urls')),
+    path('meiduo_admin/', include('apps.mei_admin.urls'))
     # path('', include('apps.contents.urls')),
 ]

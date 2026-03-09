@@ -9,19 +9,37 @@ var vm = new Vue({
         cart_total_count: 0, // 购物车总数量
         carts: [], // 购物车数据,
         username:'',
-        content_category:[]
+        content_category:[],
+        showCart: false,
+        debounceTimer: null
     },
     mounted(){
         // 获取购物车数据
         // this.get_carts();
 
          // 获取cookie中的用户名
-    	this.username = getCookie('username');
+    	this.username = this.getCookie('username');  // 改为 this.getCookie
 
 
         this.get_cart()
     },
     methods: {
+        // 添加 getCookie 方法
+        getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        },
+
         // get_category_data:function(){
         //     var url = this.host + '/content_category/';
         //     axios.get(url, {
@@ -73,27 +91,3 @@ var vm = new Vue({
 
     }
 });
-
-
-
-
-
-
-
-
-
-
-// $(function(){
-//     // 楼层选项卡
-// 	var $tab = $('.subtitle a');
-// 	var $content = $('.goods_list_con .goods_list');
-//
-// 	$tab.click(function(){
-// 		var $index = $tab.index($(this));
-// 		$(this).addClass('active').siblings().removeClass('active');
-// 		$content.eq($index).addClass('goods_list_show').siblings().removeClass('goods_list_show');
-// 	});
-//
-// 	// 获取并展示购物车数据
-// 	get_cart();
-// });

@@ -28,7 +28,7 @@ class IndexView(View):
             'contents': contents,
         }
 
-        return render(request, 'index.html', context=context)
+        return render(request, '../../front_end_pc/index.html', context=context)
 
 
 """商品展示分页"""

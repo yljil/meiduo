@@ -11,4 +11,4 @@ class MyStorage(Storage):
         pass
 
     def url(self, name):
-        return "http://127.0.0.1:8000/" + name #docker启动是设置的IP
+        return "http://www.meiduo.site:8888/" + name #docker启动是设置的IP

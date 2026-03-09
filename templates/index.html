@@ -38,7 +38,7 @@
 	</div>
 
 	<div class="search_bar clearfix">
-		<a href="index.html" class="logo fl"><img src="../static/images/logo.png"></a>
+		<a href="index.html" class="logo fl"><img src="../images/logo.png"></a>
 		<div class="search_wrap fl">
 			<form method="get" action="/search.html" class="search_con">
                 <input type="text" class="input_text fl" name="q" placeholder="搜索商品">
@@ -83,7 +83,7 @@
 		<ul class="slide">
             {% for lbt in contents.index_lbt %}
             {# <li><a href="{{ lbt.url }}"><img src="http://image.meiduo.site:8888/{{ lbt.image }}" alt="{{ lbt.title }}"></a></li> #}
-            <li><a href="{{ lbt.url }}"><img src="{{ lbt.image.url }}" alt="{{ lbt.title }}"></a></li>
+            <li><a href=""><img src="http://www.meiduo.site:8888{{ lbt.image.url }}" alt="{{ lbt.title }}"></a></li>
 
             {% endfor %}
 		</ul>
@@ -97,7 +97,7 @@
                     <li>
                         <div class="level1">
                             {% for chanel in group.channels %}
-                                <a href="{{ chanel.url }}">{{ chanel.name }}</a>
+                                <a href="">{{ chanel.name }}</a>
                             {% endfor %}
                         </div>
                         <div class="level2">
@@ -126,11 +126,11 @@
             </div>
             <ul class="news_list">
                 {% for content in contents.index_kx %}
-                    <li><a href="{{ content.url }}">{{ content.title }}</a></li>
+                    <li><a href="">{{ content.title }}</a></li>
                 {% endfor %}
             </ul>
             {% for content in contents.index_ytgg %}
-                <a href="{{ content.url }}" class="advs"><img src="{{ content.image.url }}"></a>
+                <a href=" }" class="advs"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
             {% endfor %}
         </div>
     </div>
@@ -147,15 +147,15 @@
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
 
-                <img src="{{ contents.index_1f_logo.0.image.url }}">
+                <img src="http://www.meiduo.site:8888{{ contents.index_1f_logo.0.image.url }}">
                 <div class="channel">
                     {% for content in contents.index_1f_pd %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href=" ">{{ content.title }}</a>
                     {% endfor %}
                 </div>
                 <div class="key_words">
                     {% for content in contents.index_1f_bq %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href=" ">{{ content.title }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -163,8 +163,8 @@
                 <ul v-show="f1_tab===1" class="goods_list fl">
                     {% for content in contents.index_1f_ssxp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href=" " class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href=" " title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -172,8 +172,8 @@
                 <ul v-show="f1_tab===2" class="goods_list fl">
                     {% for content in contents.index_1f_cxdj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href=" " class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href=" " title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -181,8 +181,8 @@
                 <ul v-show="f1_tab===3" class="goods_list fl">
                     {% for content in contents.index_1f_sjpj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href=" " class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href=" }" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -201,15 +201,15 @@
         </div>
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
-                <img src="{{ contents.index_2f_logo.0.image.url }}">
+                <img src="http://www.meiduo.site:8888{{ contents.index_2f_logo.0.image.url }}">
                 <div class="channel">
                     {% for content in contents.index_2f_pd %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href=" ">{{ content.title }}</a>
                     {% endfor %}
                 </div>
                 <div class="key_words">
                     {% for content in contents.index_2f_bq %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href=" }">{{ content.title }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -217,8 +217,8 @@
                 <ul v-show="f2_tab===1" class="goods_list fl">
                     {% for content in contents.index_2f_cxdj %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href=" " class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href=" " title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -226,8 +226,8 @@
                 <ul v-show="f2_tab===2" class="goods_list fl">
                     {% for content in contents.index_2f_jjhg %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href=" " class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href="" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -246,15 +246,15 @@
         </div>
         <div class="goods_con clearfix">
             <div class="goods_banner fl">
-                <img src="{{ contents.index_3f_logo.0.image.url }}">
+                <img src="http://www.meiduo.site:8888{{ contents.index_3f_logo.0.image.url }}">
                 <div class="channel">
                     {% for content in contents.index_3f_pd %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href="">{{ content.title }}</a>
                     {% endfor %}
                 </div>
                 <div class="key_words">
                     {% for content in contents.index_3f_bq %}
-                        <a href="{{ content.url }}">{{ content.title }}</a>
+                        <a href="">{{ content.title }}</a>
                     {% endfor %}
                 </div>
             </div>
@@ -262,8 +262,8 @@
                 <ul v-show="f3_tab===1" class="goods_list fl">
                     {% for content in contents.index_3f_shyp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href="" class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href="" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
@@ -271,8 +271,8 @@
                 <ul v-show="f3_tab===2" class="goods_list fl">
                     {% for content in contents.index_3f_cfyp %}
                         <li>
-                            <a href="{{ content.url }}" class="goods_pic"><img src="{{ content.image.url }}"></a>
-                            <h4><a href="{{ content.url }}" title="{{ content.title }}">{{ content.title }}</a></h4>
+                            <a href="" class="goods_pic"><img src="http://www.meiduo.site:8888{{ content.image.url }}"></a>
+                            <h4><a href="" title="{{ content.title }}">{{ content.title }}</a></h4>
                             <div class="price">{{ content.text }}</div>
                         </li>
                     {% endfor %}
